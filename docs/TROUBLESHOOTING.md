@@ -32,7 +32,7 @@ hyprctl configerrors
 
 No output means there are no configuration errors.
 
-## The red X is visible but does not close the window
+## The × is visible but does not close the window
 
 Update and re-run setup:
 
@@ -76,13 +76,25 @@ Press **Super+Ctrl+T** again to return to regular tiling. Classic Windows retile
 
 ## Double-clicking the title bar does not maximize
 
-Make sure you double-click the title-bar area rather than the red **X**. Check the configured action:
+Make sure you double-click the title-bar area rather than the **×**. Check the configured action:
 
 ```bash
 hyprctl getoption plugin:hyprbars:on_double_click
 ```
 
 It should contain `hl.dsp.window.fullscreen({ mode = "maximized" })`. This is Hyprland's maximized state, which keeps the Omarchy bar and reserved screen area visible; it is not fullscreen mode.
+
+## The title bar color does not match my theme
+
+Classic Windows reads Omarchy's current theme from `~/.local/state/omarchy/current/theme/colors.toml` when Hyprland reloads. Changing themes with Omarchy's normal theme picker reloads Hyprland, so the title bar and × should follow the new background and border colors automatically.
+
+If they do not, check that the overlay is still the installed file:
+
+```bash
+hyprctl getoption plugin:hyprbars:bar_color
+```
+
+Then log out and sign in again so hyprbars is loaded from a clean session.
 
 ## An Omarchy update disabled hyprbars
 

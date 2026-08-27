@@ -122,13 +122,25 @@ esac
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("Super+Ctrl+T", result.stdout)
         self.assertIn("Double-click the title bar", result.stdout)
+        self.assertIn("matches your current Omarchy theme", result.stdout)
+        self.assertIn("simple ×", result.stdout)
 
-    def test_overlay_configures_transparent_bar_and_native_maximize(self):
+    def test_overlay_uses_omarchy_theme_colors_and_native_maximize(self):
         result = self.run_script("setup.sh", "--yes")
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         overlay = (self.hypr / "classic-windows.lua").read_text()
-        self.assertIn('bar_color = "rgba(00000000)"', overlay)
+        self.assertIn("/.local/state/omarchy/current/theme/colors.toml", overlay)
+        self.assertIn("palette.hyprland_active_border", overlay)
+        self.assertIn("palette.accent", overlay)
+        self.assertIn("bar_color = theme.background", overlay)
+        self.assertIn('["col.text"] = theme.foreground', overlay)
+        self.assertIn("bg_color = theme.background", overlay)
+        self.assertIn("fg_color = theme.active_border", overlay)
+        self.assertIn('icon = "×"', overlay)
+        self.assertIn("size = 20", overlay)
+        self.assertNotIn('bar_color = "rgba(00000000)"', overlay)
+        self.assertNotIn('bg_color = "rgb(ff4040)"', overlay)
         self.assertIn(
             'hl.dsp.window.fullscreen({ mode = \\"maximized\\" })',
             overlay,

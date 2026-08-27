@@ -1,6 +1,84 @@
 -- Omarchy Classic Windows
 -- Native-feeling floating windows for people coming from Windows or macOS.
 
+local function is_theme_color(value)
+  if type(value) ~= "string" then
+    return false
+  end
+
+  local hex = value:match("^#([%x]+)$")
+  if hex ~= nil then
+    return #hex == 6 or #hex == 8
+  end
+
+  local kind, body = value:match("^(rgba?)%(([^)]+)%)$")
+  if kind == nil then
+    return false
+  end
+
+  if body:match("^%x+$") then
+    return (kind == "rgb" and #body == 6) or (kind == "rgba" and #body == 8)
+  end
+
+  return body:match("^%s*%d+%s*,%s*%d+%s*,%s*%d+%s*,?%s*[%d%.]*%s*$") ~= nil
+end
+
+local function gradient_start(spec, palette)
+  if type(spec) ~= "string" then
+    return nil
+  end
+
+  for token in spec:gmatch("%S+") do
+    if not token:match("^-?%d+%.?%d*deg$") then
+      local color = palette[token] or token
+      if is_theme_color(color) then
+        return color
+      end
+    end
+  end
+
+  return nil
+end
+
+local function load_theme_colors()
+  local palette = {}
+  local home = os.getenv("HOME") or ""
+  local colors_path = home .. "/.local/state/omarchy/current/theme/colors.toml"
+  local colors = io.open(colors_path, "r")
+
+  if colors ~= nil then
+    for line in colors:lines() do
+      local key, value = line:match("^%s*([%w_%-]+)%s*=%s*[\"']([^\"']+)[\"']")
+      if key ~= nil then
+        palette[key] = value
+      end
+    end
+    colors:close()
+  end
+
+  local background = gradient_start(palette.background, palette)
+    or gradient_start(palette.bg, palette)
+    or gradient_start(palette.color0, palette)
+    or "#222222"
+  local foreground = gradient_start(palette.foreground, palette)
+    or gradient_start(palette.fg, palette)
+    or gradient_start(palette.color7, palette)
+    or "#eeeeee"
+  local active_border = gradient_start(palette.hyprland_active_border, palette)
+    or gradient_start(palette.accent, palette)
+    or gradient_start(palette.blue, palette)
+    or gradient_start(palette.color4, palette)
+    or foreground
+
+  return {
+    background = background,
+    foreground = foreground,
+    active_border = active_border,
+  }
+end
+
+local theme = load_theme_colors()
+
 hl.config({
   general = {
     resize_on_border = true,
@@ -16,8 +94,9 @@ hl.config({
       bar_buttons_alignment = "right",
       bar_part_of_window = true,
       bar_precedence_over_border = true,
-      bar_color = "rgba(00000000)",
-      ["col.text"] = "rgb(f0f0f0)",
+      bar_color = theme.background,
+      ["col.text"] = theme.foreground,
+      inactive_button_color = theme.background,
       on_double_click = "hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = \"maximized\" })'",
     },
   },
@@ -25,10 +104,10 @@ hl.config({
 
 if hl.plugin.hyprbars ~= nil then
   hl.plugin.hyprbars.add_button({
-    bg_color = "rgb(ff4040)",
-    fg_color = "rgb(ffffff)",
-    size = 12,
-    icon = "X",
+    bg_color = theme.background,
+    fg_color = theme.active_border,
+    size = 20,
+    icon = "×",
     action = "hyprctl dispatch 'hl.dsp.window.close()'",
   })
 end
