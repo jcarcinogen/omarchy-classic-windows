@@ -10,6 +10,10 @@ Give Omarchy floating windows the familiar behavior people expect from Windows a
 - Click the red **X** to close.
 - Tiled windows keep Omarchy's clean border-only look.
 
+![Floating Chromium and terminal with Classic Windows title bars, plus a bottom dock](docs/images/classic-windows-with-dock.png)
+
+Classic Windows only adds title bars and floating-window behavior. The example above also has [Dock](https://omarchyplugins.com/plugin.html?id=rosakodu.dock) (`rosakodu.dock`) enabled along the bottom. Install that plugin separately if you want a dock.
+
 ## Before you install
 
 This project is for **Omarchy Quattro** using Hyprland 0.56 or newer. It does not support Omarchy 3, GNOME, KDE Plasma, or other Linux desktops.
