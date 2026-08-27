@@ -1,5 +1,7 @@
 # Omarchy Classic Windows
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/T2J625IUHY)
+
 ![Floating Files and terminal windows with theme-colored title bars and a simple close ×](docs/images/classic-windows.png)
 
 Give Omarchy floating windows the familiar behavior people expect from Windows and macOS—without turning Omarchy into a traditional stacking desktop.
