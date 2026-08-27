@@ -53,8 +53,10 @@ done
 [[ -f "$PACKAGED_OVERLAY" ]] || fail "the package is incomplete: config/classic-windows.lua is missing."
 
 printf '%s\n' 'Omarchy Classic Windows will:'
-printf '%s\n' '  • add a close-only title bar to floating windows'
+printf '%s\n' '  • add a transparent, close-only title bar to floating windows'
 printf '%s\n' '  • make Super+T float and center the active window'
+printf '%s\n' '  • make Super+Ctrl+T toggle automatic floating for newly opened windows'
+printf '%s\n' '  • maximize and restore a floating window when you double-click its title bar'
 printf '%s\n' '  • let you resize floating windows by dragging an edge or corner'
 printf '%s\n' '  • leave tiled windows clean, without title bars'
 printf '\n%s\n' 'Your existing Hyprland files are backed up or edited only inside clearly marked blocks.'
@@ -114,6 +116,8 @@ hyprctl reload >/dev/null 2>&1 || true
 
 printf '\n%s\n' '✓ Classic Windows is installed.'
 printf '%s\n' '  Press Super+T on any window to switch between tiled and floating.'
+printf '%s\n' '  Press Super+Ctrl+T to make newly opened windows float automatically.'
+printf '%s\n' '  Double-click the title bar to maximize or restore a floating window.'
 printf '%s\n' '  Drag a floating window edge or corner to resize it.'
 printf '%s\n' '  Click the red X to close it.'
 printf '\n%s\n' 'One final step: log out of Omarchy and sign in again once.'

@@ -1,18 +1,20 @@
 # Omarchy Classic Windows
 
-![A centered floating terminal with a dark title bar and red close button](docs/images/classic-windows.png)
+![Floating Chromium and terminal windows with transparent title bars and red close buttons](docs/images/classic-windows.png)
 
 Give Omarchy floating windows the familiar behavior people expect from Windows and macOS—without turning Omarchy into a traditional stacking desktop.
 
 - Press **Super+T** to switch the active window between tiled and floating.
+- Press **Super+Ctrl+T** to make every newly opened window float automatically; press it again to return to regular tiling.
 - Floating windows are centered at a comfortable size.
+- Double-click a floating window's transparent title bar to maximize it without entering fullscreen; double-click again to restore its previous size.
 - Drag any edge or corner to resize.
 - Click the red **X** to close.
 - Tiled windows keep Omarchy's clean border-only look.
 
 ![Floating Chromium and terminal with Classic Windows title bars, plus a bottom dock](docs/images/classic-windows-with-dock.png)
 
-Classic Windows only adds title bars and floating-window behavior. The example above also has [Dock](https://omarchyplugins.com/plugin.html?id=rosakodu.dock) (`rosakodu.dock`) enabled along the bottom. Install that plugin separately if you want a dock.
+Classic Windows only adds title bars and floating-window behavior. The example above also has [Dock](https://omarchyplugins.com/plugin.html?id=rosakodu.dock) (`rosakodu.dock`) enabled along the bottom. It was captured with an earlier Classic Windows version that used black title bars; the current version uses the transparent bars shown in the first screenshot. Install Dock separately if you want it.
 
 ## Before you install
 
@@ -44,7 +46,8 @@ When setup finishes, **log out of Omarchy and sign in again once**. This starts 
 2. Press **Super+T**.
 3. The terminal should become a centered floating window with a title bar.
 4. Drag an edge or corner to resize it.
-5. Click the red **X** to close it.
+5. Double-click the transparent title bar to maximize it, then double-click again to restore it.
+6. Click the red **X** to close it.
 
 ## Everyday controls
 
@@ -52,11 +55,17 @@ When setup finishes, **log out of Omarchy and sign in again once**. This starts 
 |---|---|
 | Make a tiled window float | **Super+T** |
 | Put a floating window back into the layout | **Super+T** |
+| Make newly opened windows float automatically | **Super+Ctrl+T** |
+| Return to regular tiling | **Super+Ctrl+T** again |
+| Maximize a floating window without fullscreen | Double-click its title bar |
+| Restore the window's previous size | Double-click its title bar again |
 | Move a floating window | Drag its title bar |
 | Resize a floating window | Drag any edge or corner |
 | Close a floating window | Click the red **X** |
 
 On most keyboards, **Super** is the key with the Windows logo. Apple keyboards usually label it **Command (⌘)**.
+
+Automatic floating mode is remembered across restarts. Turning it off retiles only windows that the mode floated automatically; windows that were already floating for another reason are left alone. **Super+T** always remains available as a per-window override.
 
 ## Update
 
@@ -101,6 +110,7 @@ See [Troubleshooting](docs/TROUBLESHOOTING.md) for plain-language fixes and diag
 
 - Tested on Omarchy Quattro, Hyprland 0.56.2.
 - Designed for the default **Super+T** floating-window shortcut.
+- Adds **Super+Ctrl+T** for persistent automatic floating mode.
 - Uses monitor-relative sizing, so it is not tied to one laptop or resolution.
 - Client-side decorations in apps such as Brave or file managers may still display their own header controls inside the app.
 

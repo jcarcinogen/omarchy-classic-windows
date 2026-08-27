@@ -16,8 +16,9 @@ hl.config({
       bar_buttons_alignment = "right",
       bar_part_of_window = true,
       bar_precedence_over_border = true,
-      bar_color = "rgb(2a2a2a)",
+      bar_color = "rgba(00000000)",
       ["col.text"] = "rgb(f0f0f0)",
+      on_double_click = "hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = \"maximized\" })'",
     },
   },
 })
@@ -53,8 +54,8 @@ local function set_nobar(on, w)
   poke_hyprbars(w)
 end
 
-local function float_size()
-  local m = hl.get_active_monitor()
+local function float_size(w)
+  local m = (w ~= nil and w.monitor) or hl.get_active_monitor()
   local scale = m.scale
   if scale == nil or scale < 0.1 then
     scale = 1
@@ -64,8 +65,72 @@ local function float_size()
   return math.floor(mw * 0.55), math.floor(mh * 0.60)
 end
 
+local state_home = os.getenv("XDG_STATE_HOME")
+if state_home == nil or state_home == "" then
+  state_home = os.getenv("HOME") .. "/.local/state"
+end
+local floating_mode_path = state_home .. "/omarchy-classic-windows/floating-mode.enabled"
+
+local function marker_exists()
+  local marker = io.open(floating_mode_path, "r")
+  if marker == nil then
+    return false
+  end
+  marker:close()
+  return true
+end
+
+local floating_mode = marker_exists()
+
+local function persist_floating_mode(on)
+  if on then
+    local marker = io.open(floating_mode_path, "w")
+    if marker == nil then
+      return false
+    end
+    marker:write("enabled\n")
+    marker:close()
+    return true
+  end
+
+  os.remove(floating_mode_path)
+  return true
+end
+
+local function resize_and_center(w)
+  local fw, fh = float_size(w)
+  hl.dispatch(hl.dsp.window.resize({ x = fw, y = fh, relative = false, window = w }))
+  hl.dispatch(hl.dsp.window.center({ window = w }))
+end
+
+local function auto_float(w)
+  hl.dispatch(hl.dsp.window.tag({ tag = "+cw-auto-float", window = w }))
+  hl.dispatch(hl.dsp.window.float({ action = "set", window = w }))
+  set_nobar(false, w)
+  resize_and_center(w)
+end
+
+local function restore_auto_floats_to_tiling()
+  for _, w in ipairs(hl.get_windows({ tag = "cw-auto-float" })) do
+    if w.fullscreen ~= 0 then
+      hl.dispatch(hl.dsp.window.fullscreen({ action = "unset", window = w }))
+    end
+    if w.floating then
+      hl.dispatch(hl.dsp.window.float({ action = "unset", window = w }))
+    end
+    hl.dispatch(hl.dsp.window.tag({ tag = "-cw-auto-float", window = w }))
+    set_nobar(true, w)
+  end
+end
+
 hl.on("window.open", function(w)
-  if w ~= nil and not w.floating then
+  if w == nil then
+    return
+  end
+
+  if floating_mode and not w.floating then
+    auto_float(w)
+  elseif not w.floating then
     set_nobar(true, w)
   end
 end)
@@ -81,11 +146,33 @@ o.bind("SUPER + T", "Toggle window floating/tiling", function()
   hl.dispatch(hl.dsp.window.float({ action = "toggle", window = w }))
 
   if becoming_float then
+    hl.dispatch(hl.dsp.window.tag({ tag = "-cw-auto-float", window = w }))
     set_nobar(false, w)
-    local fw, fh = float_size()
-    hl.dispatch(hl.dsp.window.resize({ x = fw, y = fh, relative = false, window = w }))
-    hl.dispatch(hl.dsp.window.center({ window = w }))
+    resize_and_center(w)
   else
+    hl.dispatch(hl.dsp.window.tag({ tag = "-cw-auto-float", window = w }))
     set_nobar(true, w)
   end
 end)
+
+hl.unbind("SUPER + CTRL + T")
+local function toggle_floating_mode()
+  floating_mode = not floating_mode
+  local persisted = persist_floating_mode(floating_mode)
+
+  if floating_mode then
+    local suffix = persisted and "" or " for this session"
+    hl.notification.create({
+      text = "Classic Windows: new windows will float" .. suffix,
+      timeout = 3000,
+    })
+  else
+    restore_auto_floats_to_tiling()
+    hl.notification.create({
+      text = "Classic Windows: regular tiling restored",
+      timeout = 3000,
+    })
+  end
+end
+
+o.bind("SUPER + CTRL + T", "Toggle automatic floating mode", toggle_floating_mode)

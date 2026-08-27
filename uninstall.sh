@@ -36,6 +36,7 @@ KNOWN_STATE_FILES=(
   autostart.added
   overlay.backup
   overlay.created
+  floating-mode.enabled
   hyprbars.enabled
   repository.added
 )

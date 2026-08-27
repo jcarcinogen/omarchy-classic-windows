@@ -68,6 +68,22 @@ git pull --ff-only
 
 Log out and back in once after updating so old window tags are cleared.
 
+## Super+Ctrl+T is on, but a window still tiles
+
+Automatic floating applies when a window opens. Close and reopen the app after enabling the mode. Apps that create special dialogs or popups may still choose their own floating behavior.
+
+Press **Super+Ctrl+T** again to return to regular tiling. Classic Windows retiles only windows it floated automatically and leaves manually floating windows alone. The mode is remembered across restarts.
+
+## Double-clicking the title bar does not maximize
+
+Make sure you double-click the title-bar area rather than the red **X**. Check the configured action:
+
+```bash
+hyprctl getoption plugin:hyprbars:on_double_click
+```
+
+It should contain `hl.dsp.window.fullscreen({ mode = "maximized" })`. This is Hyprland's maximized state, which keeps the Omarchy bar and reserved screen area visible; it is not fullscreen mode.
+
 ## An Omarchy update disabled hyprbars
 
 Run setup again:

@@ -116,6 +116,36 @@ esac
         self.assertEqual(overlay.read_text(), (ROOT / "config" / "classic-windows.lua").read_text())
         self.assertTrue((self.home / ".fake-hyprbars-enabled").exists())
 
+    def test_setup_explains_global_mode_and_title_bar_maximize(self):
+        result = self.run_script("setup.sh", "--yes")
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Super+Ctrl+T", result.stdout)
+        self.assertIn("Double-click the title bar", result.stdout)
+
+    def test_overlay_configures_transparent_bar_and_native_maximize(self):
+        result = self.run_script("setup.sh", "--yes")
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        overlay = (self.hypr / "classic-windows.lua").read_text()
+        self.assertIn('bar_color = "rgba(00000000)"', overlay)
+        self.assertIn(
+            'hl.dsp.window.fullscreen({ mode = \\"maximized\\" })',
+            overlay,
+        )
+        self.assertNotIn("hyprctl dispatch fullscreen 1", overlay)
+
+    def test_overlay_global_mode_is_persistent_and_retiles_only_auto_floats(self):
+        result = self.run_script("setup.sh", "--yes")
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        overlay = (self.hypr / "classic-windows.lua").read_text()
+        self.assertIn('hl.unbind("SUPER + CTRL + T")', overlay)
+        self.assertIn('o.bind("SUPER + CTRL + T"', overlay)
+        self.assertIn('/omarchy-classic-windows/floating-mode.enabled"', overlay)
+        self.assertIn('tag = "+cw-auto-float"', overlay)
+        self.assertIn('hl.get_windows({ tag = "cw-auto-float" })', overlay)
+
     def test_setup_is_idempotent(self):
         first = self.run_script("setup.sh", "--yes")
         second = self.run_script("setup.sh", "--yes")
@@ -217,6 +247,23 @@ esac
         self.assertEqual((self.hypr / "hyprland.lua").read_text(), before_hyprland)
         self.assertEqual((self.hypr / "autostart.lua").read_text(), before_autostart)
         self.assertFalse((self.hypr / "classic-windows.lua").exists())
+
+    def test_uninstall_removes_the_plugin_floating_mode_marker(self):
+        setup = self.run_script("setup.sh", "--yes")
+        self.assertEqual(setup.returncode, 0, setup.stdout + setup.stderr)
+        marker = (
+            self.home
+            / ".local"
+            / "state"
+            / "omarchy-classic-windows"
+            / "floating-mode.enabled"
+        )
+        marker.touch()
+
+        uninstall = self.run_script("uninstall.sh", "--yes")
+
+        self.assertEqual(uninstall.returncode, 0, uninstall.stdout + uninstall.stderr)
+        self.assertFalse(marker.exists())
 
     def test_setup_fails_safely_when_not_running_omarchy_lua_config(self):
         (self.hypr / "hyprland.lua").unlink()
