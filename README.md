@@ -1,6 +1,6 @@
 # Omarchy Classic Windows
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/T2J625IUHY)
+[![Tip with X Money](tip-with-x-money.png)](https://x.com/scottito22)
 
 ![Floating Files and terminal windows with theme-colored title bars and a simple close ×](docs/images/classic-windows.png)
 
