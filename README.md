@@ -1,6 +1,6 @@
 # Omarchy Classic Windows
 
-[![Tip with X Money](tip-with-x-money.png)](https://x.com/scottito22)
+[![Tip with X Money](tip-with-x-money.svg)](https://x.com/scottito22)
 
 ![Floating Files and terminal windows with theme-colored title bars and a simple close ×](docs/images/classic-windows.png)
 
